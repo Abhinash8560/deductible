@@ -1,0 +1,65 @@
+<app-loader></app-loader>
+<mat-toolbar class="sub-heading">
+      <span></span>
+      <button mat-button *ngIf="!searchEnabled" (click)="searchDeductibles()"><mat-icon>keyboard_backspace</mat-icon></button>
+      <h2 *ngIf="!searchEnabled">{{action}} Deductible <div style="text-align: center; color: #3D9970" *ngIf="confirmMessage">{{confirmMessage}}</div></h2>
+      <span class="heading"></span>
+      <span>
+        <button mat-button (click)="createDeductible()"><mat-icon matTooltip="Create">add_circle_outline</mat-icon></button>
+        <button mat-button *ngIf="!searchEnabled && action === 'View'" (click)="receiveMessage({'action': 'Update', 'data': {deductible_id: deductibleForm.value.deductible_id}})"><mat-icon matTooltip="Edit">edit</mat-icon></button>
+      </span>
+</mat-toolbar>
+<app-search *ngIf="searchEnabled" [searchRequest]="searchRequest" (messageEvent)="receiveMessage($event)"></app-search>
+<div class="SubForm" *ngIf="selectedBTId">
+  <form [formGroup]="deductibleForm" *ngIf="selectedBTId">
+    <mat-form-field class="example-full-width">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="short_name" required>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description" required>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+        <mat-label>LOB</mat-label>
+        <mat-select formControlName="lob" required>
+          <mat-option *ngFor="let opt of lobOptions" [value]="opt">
+              {{opt}}
+          </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+        <mat-label>Optionality</mat-label>
+        <mat-select formControlName="optionality" required>
+          <mat-option *ngFor="let opt of deductibleOptionality" [value]="opt">
+              {{opt}}
+          </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type" required>
+          <mat-option *ngFor="let ltype of deductibleType" [value]="ltype">
+              {{ltype}}
+          </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Effective Date</mat-label>
+      <input matInput [min]="today" [matDatepicker]="eftDtPicker" formControlName="effective_dt" required>
+      <mat-datepicker-toggle matSuffix [for]="eftDtPicker"></mat-datepicker-toggle>
+      <mat-datepicker #eftDtPicker></mat-datepicker>
+      <mat-error *ngIf="deductibleForm.get('effective_dt').hasError('invalidEffective_dt')">{{ effDtErrMsg }}</mat-error>
+    </mat-form-field>
+
+    <div *ngIf="submitAction" class="MainButtons">
+        <button mat-raised-button class="submitbutton" (click)="confirmationDialog(action, deductibleForm.value.deductible_id)" [disabled]="!deductibleForm.valid"> {{action}} </button>
+        <button mat-raised-button class="cancelbutton" (click)="onCancel()">Cancel</button>
+    </div>
+</form>
+</div>
